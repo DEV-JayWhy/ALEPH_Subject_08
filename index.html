@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>박준영 — Personal Page</title>
+  <meta
+    name="description"
+    content="박준영을 소개하는 개인 페이지입니다."
+  />
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        "Noto Sans KR",
+        sans-serif;
+      background: #f7f7f5;
+      color: #171717;
+      line-height: 1.7;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .container {
+      width: min(900px, calc(100% - 40px));
+      margin: 0 auto;
+    }
+
+    /* Header */
+    header {
+      min-height: auto;
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .hero {
+      padding: 80px 0;
+    }
+
+    .eyebrow {
+      font-size: 14px;
+      color: #777;
+      margin-bottom: 20px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      font-size: clamp(52px, 10vw, 100px);
+      line-height: 0.95;
+      letter-spacing: -0.06em;
+      margin-bottom: 35px;
+    }
+
+    .intro {
+      max-width: 620px;
+      font-size: clamp(20px, 3vw, 28px);
+      line-height: 1.5;
+      letter-spacing: -0.03em;
+    }
+
+    .links {
+      display: flex;
+      gap: 10px;
+      margin-top: 35px;
+      flex-wrap: wrap;
+    }
+
+    .links a {
+      border: 1px solid #ccc;
+      padding: 9px 16px;
+      border-radius: 999px;
+      font-size: 14px;
+      transition: 0.2s;
+    }
+
+    .links a:hover {
+      background: #171717;
+      color: white;
+      border-color: #171717;
+    }
+
+    /* Hero Summary / Table of Contents */
+    .hero-summary {
+      margin-top: 45px;
+      padding-top: 25px;
+      border-top: 1px solid #ddd;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .hero-summary a {
+      display: block;
+      padding: 18px;
+      background: white;
+      border: 1px solid #e2e2e2;
+      transition: 0.2s;
+    }
+
+    .hero-summary a:hover {
+      transform: translateY(-2px);
+      border-color: #171717;
+    }
+
+    .hero-summary-number {
+      display: block;
+      font-size: 12px;
+      color: #737373;
+      margin-bottom: 8px;
+    }
+
+    .hero-summary-title {
+      display: block;
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+
+    .hero-summary-text {
+      display: block;
+      color: #666;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    /* Sections */
+    section {
+      padding: 110px 0;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .section-label {
+      font-size: 13px;
+      color: #777;
+      letter-spacing: 0.08em;
+      margin-bottom: 35px;
+    }
+
+    h2 {
+      font-size: clamp(32px, 5vw, 52px);
+      line-height: 1.15;
+      letter-spacing: -0.05em;
+      margin-bottom: 45px;
+    }
+
+    h3 {
+      font-size: 22px;
+      margin-bottom: 12px;
+      letter-spacing: -0.03em;
+    }
+
+    .about-text {
+      max-width: 700px;
+      font-size: 18px;
+      color: #444;
+    }
+
+    .keywords {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 35px;
+    }
+
+    .keyword {
+      background: white;
+      border: 1px solid #ddd;
+      padding: 7px 13px;
+      border-radius: 999px;
+      font-size: 14px;
+    }
+
+    /* Likes */
+    .like-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .like-card {
+      background: white;
+      padding: 28px;
+      border: 1px solid #e2e2e2;
+      min-height: 180px;
+    }
+
+    .number {
+      font-size: 13px;
+      color: #999;
+      margin-bottom: 30px;
+    }
+
+    .like-card p {
+      color: #666;
+      font-size: 15px;
+    }
+
+    /* Experience */
+    .experience {
+      display: flex;
+      flex-direction: column;
+      gap: 60px;
+    }
+
+    .experience-item {
+      display: grid;
+      grid-template-columns: 100px 1fr;
+      gap: 30px;
+    }
+
+    .experience-number {
+      font-size: 14px;
+      color: #999;
+    }
+
+    .experience-meta {
+      color: #888;
+      font-size: 14px;
+      margin-bottom: 18px;
+    }
+
+    .experience-description {
+      color: #555;
+      margin-bottom: 20px;
+      max-width: 650px;
+    }
+
+    .learned {
+      border-left: 2px solid #171717;
+      padding-left: 16px;
+      color: #333;
+      font-size: 15px;
+    }
+
+    .learned strong {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 3px;
+    }
+
+    /* Now */
+    .now-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .now-item {
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      padding: 25px 0;
+      border-top: 1px solid #ddd;
+    }
+
+    .now-item:last-child {
+      border-bottom: 1px solid #ddd;
+    }
+
+    .now-title {
+      font-weight: 600;
+    }
+
+    .now-content {
+      color: #555;
+    }
+
+    /* Contact */
+    .contact {
+      background: #171717;
+      color: white;
+      border-bottom: none;
+    }
+
+    .contact .section-label {
+      color: #999;
+    }
+
+    .contact h2 {
+      max-width: 600px;
+    }
+
+    .contact-text {
+      color: #bbb;
+      margin-bottom: 30px;
+    }
+
+    .contact-links {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .contact-links a {
+      border-bottom: 1px solid #777;
+      padding-bottom: 3px;
+    }
+
+    .contact-links a:hover {
+      border-color: white;
+    }
+
+    /* Footer */
+    footer {
+      background: #171717;
+      color: #777;
+      padding: 30px 0;
+      font-size: 13px;
+    }
+
+    /* Card 5 Interaction */
+    .keywords {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 35px;
+    }
+
+    .keyword {
+      background: white;
+      border: 1px solid #ddd;
+      padding: 7px 13px;
+      border-radius: 999px;
+      font-size: 14px;
+    }
+
+    .keyword-extra[hidden],
+    .tech-extra[hidden] {
+      display: none;
+    }
+
+    .more-button {
+      appearance: none;
+      border: 1px solid #ccc;
+      background: white;
+      color: #171717;
+      padding: 7px 13px;
+      border-radius: 999px;
+      font: inherit;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .more-button:hover,
+    .more-button:focus-visible {
+      background: #171717;
+      color: white;
+      border-color: #171717;
+      outline: none;
+    }
+
+    .tech-stack {
+      margin-top: 8px;
+    }
+
+    .tech-items {
+      display: inline-flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      align-items: center;
+    }
+
+    .tech-item {
+      display: inline-block;
+      padding: 5px 9px;
+      border: 1px solid #ddd;
+      border-radius: 999px;
+      background: white;
+      font-size: 13px;
+      color: #444;
+    }
+    
+    /* Mobile */
+    @media (max-width: 700px) {
+      .container {
+        width: min(100% - 30px, 900px);
+      }
+
+      header {
+        min-height: 80vh;
+      }
+
+      section {
+        padding: 80px 0;
+      }
+
+      .like-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-summary {
+        grid-template-columns: 1fr;
+      }
+
+      .experience-item {
+        grid-template-columns: 1fr;
+        gap: 5px;
+      }
+
+      .experience-number {
+        margin-bottom: 5px;
+      }
+
+      .now-item {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- =========================
+       HERO
+  ========================== -->
+  <header>
+    <div class="container hero">
+
+      <div class="eyebrow">Personal Page</div>
+
+      <h1>박준영</h1>
+
+      <p class="intro">
+        새로운 것을 직접 만들어보고,
+        그 과정에서 배우는 것을 좋아합니다.
+      </p>
+
+      <div class="links">
+        <!-- 아래 링크를 본인의 주소로 수정하세요 -->
+        <a href="https://github.com/DEV-JayWhy/ALEPH_Subject_01.git" target="_blank" rel="noopener">
+          GitHub ↗
+        </a>
+
+        <a href="mailto:dev.jaywhy@gmail.com">
+          Email ↗
+        </a>
+
+        <a href="https://app.notion.com/p/272e5a96e3ce80d390c1cf63b52eeb14?source=copy_link" target="_blank" rel="noopener">
+          notion ↗
+        </a>
+      </div>
+
+      <div class="hero-summary">
+        <a href="#about">
+          <span class="hero-summary-number">01 / ABOUT</span>
+          <span class="hero-summary-title">소개</span>
+          <span class="hero-summary-text">새로운 것을 배우고 직접 만들어보는 사람</span>
+        </a>
+
+        <a href="#like">
+          <span class="hero-summary-number">02 / I LIKE</span>
+          <span class="hero-summary-title">활동</span>
+          <span class="hero-summary-text">개발 · 네트워크 공부 · 게임 · 음악 · 독서</span>
+        </a>
+
+        <a href="#experience">
+          <span class="hero-summary-number">03 / EXPERIENCE</span>
+          <span class="hero-summary-title">근거</span>
+          <span class="hero-summary-text">관제 시스템 · 웹 개발 · 금융기관 웹 개발 경험</span>
+        </a>
+      </div>
+
+    </div>
+  </header>
+
+
+  <main>
+
+    <!-- =========================
+         ABOUT
+    ========================== -->
+    <section id="about" tabindex="0">
+      <div class="container">
+
+        <div class="section-label">01 / ABOUT</div>
+
+        <h2>나는 이런 사람입니다.</h2>
+
+        <div class="about-text">
+          <p>
+            저는 새로운 것을 배우고 직접 만들어보는 과정을 좋아합니다.
+            궁금한 것이 생기면 직접 찾아보고, 작은 결과물이라도 만들어보며
+            이해하는 편입니다.
+          </p>
+
+          <br />
+
+          <p>
+            아직 배우는 과정에 있지만, 하나씩 경험을 쌓으면서
+            제가 잘하는 것과 좋아하는 것을 찾아가고 있습니다.
+          </p>
+        </div>
+
+        <div class="keywords" aria-label="소개 키워드">
+          <span class="keyword">#개발</span>
+          <span class="keyword">#네트워크</span>
+          <span class="keyword">#새로운경험</span>
+
+          <span class="keyword-extra" id="keyword-more" hidden>
+            <span class="keyword">#배우기</span>
+            <span class="keyword">#만들기</span>
+            <span class="keyword">#기록하기</span>
+          </span>
+
+          <button class="more-button" type="button" aria-expanded="false" aria-controls="keyword-more" id="keyword-toggle">
+            더보기
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- =========================
+         I LIKE
+    ========================== -->
+    <section id="like" tabindex="0">
+      <div class="container">
+
+        <div class="section-label">02 / I LIKE</div>
+
+        <h2>좋아하는 것들</h2>
+
+        <div class="like-grid">
+
+          <article class="like-card">
+            <div class="number">01</div>
+            <h3>관심사</h3>
+            <p>
+              개발과 네트워크 공부
+            </p>
+          </article>
+
+          <article class="like-card">
+            <div class="number">02</div>
+            <h3>취미</h3>
+            <p>
+              게임을 플레이 하고 어떤식으로 만들지 친구와 로직 생각 해보기
+            </p>
+          </article>
+
+          <article class="like-card">
+            <div class="number">03</div>
+            <h3>좋아하는 것</h3>
+            <p>
+              음악, 게임, 독서
+            </p>
+          </article>
+
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- =========================
+         EXPERIENCE
+    ========================== -->
+    <section id="experience" tabindex="0">
+      <div class="container">
+
+        <div class="section-label">03 / EXPERIENCE</div>
+
+        <h2>해봤던 것들</h2>
+
+        <div class="experience">
+
+          <article class="experience-item">
+
+            <div class="experience-number">01</div>
+
+            <div>
+              <h3>에쎄텔</h3>
+
+              <div class="experience-meta">
+                2021 ~ 2023 · 관제 / 관리자 웹 개발
+              </div>
+
+              <p class="experience-description">
+                국가 과제로 <span style="font-weight : bold">드론기반 전파측정 관제 시스템</span>과 
+                <span style="font-weight : bold">WiFi 인지 스테이션 관제 시스템</span>을 개발 했습니다.
+                <br>
+                자사 프로젝트로는 티머니의 결제 로그 시스템을 개발하고, 
+                대구 시설공단의 장애인 콜택시 관제 시스템을 개발했습니다.
+              </p>
+              
+              <div class="learned tech-stack">
+                <strong>기술 스택</strong>
+                <div class="tech-items" aria-label="에쎄텔 기술 스택">
+                  <span class="tech-item">JavaScript</span>
+                  <span class="tech-item">JSP</span>
+                  <span class="tech-item">JAVA</span>
+                  <span class="tech-extra" id="tech-more-1" hidden>
+                    <span class="tech-item">Angular</span>
+                    <span class="tech-item">MariaDB</span>
+                  </span>
+                  <button class="more-button" type="button" aria-expanded="false" aria-controls="tech-more-1" id="tech-toggle-1">더보기</button>
+                </div>
+              </div>
+              <br>
+              <div class="learned">
+                <strong>배운 것</strong>
+                웹서비스가 구동되는 방식과 웹 클라이언트 및 서버, <br/>
+                UDP/TCP 서버와 관제 시스템이 어떤식으로 돌아가는지와<br/> 
+                다양한 웹 개발 언어를 배웠습니다.
+              </div>
+            </div>
+
+          </article>
+
+
+          <article class="experience-item">
+
+            <div class="experience-number">02</div>
+
+            <div>
+              <h3>휴노테크</h3>
+
+              <div class="experience-meta">
+                2024 ~ 2025 · 금융기관 웹 개발 및 유지보수
+              </div>
+
+              <p class="experience-description">
+                기업/개인 인터넷/모바일 뱅킹 페이지를 개발 했습니다.
+                <br>
+                자사 내에서 쓰는 쇼핑몰과 회원들의 전용 앱 페이지를 개발 했습니다.
+              </p>
+              
+              <div class="learned tech-stack">
+                <strong>기술 스택</strong>
+                <div class="tech-items" aria-label="휴노테크 기술 스택">
+                  <span class="tech-item">Vue</span>
+                  <span class="tech-item">JavaScript</span>
+                  <span class="tech-item">JAVA</span>
+                  <span class="tech-extra" id="tech-more-2" hidden>
+                    <span class="tech-item">JSP</span>
+                    <span class="tech-item">MySQL</span>
+                  </span>
+                  <button class="more-button" type="button" aria-expanded="false" aria-controls="tech-more-2" id="tech-toggle-2">더보기</button>
+                </div>
+              </div>
+              
+              <br>
+              <div class="learned">
+                <strong>배운 것</strong>
+                금융기관의 구조를 파악 할 수 있었고, 새로운 웹 개발 언어를 배울 수 있었습니다.
+                <br>
+                또한 다양한 개발 지식을 알 수 있었고 체계적인 구조가 얼마나 중요한지 깨닫게 되었습니다.
+              </div>
+            </div>
+
+          </article>
+
+
+          <article class="experience-item">
+
+            <div class="experience-number">03</div>
+
+            <div>
+              <h3>K-뉴딜 아카데미</h3>
+
+              <div class="experience-meta">
+                2026 · AI 보안/네트워크 분야
+              </div>
+
+              <p class="experience-description">
+                네트워크와 리눅스의 기초부터 심화과정을 배웠습니다.
+                <br>
+                해당 과정에 AI를 접목시켜 AX 체계로 전환하는 과정을 배울 예정입니다.
+              </p>
+              
+              <div class="learned">
+                <strong>배운 것</strong>
+                네트워크 구조와 리눅스 명령어 및 서버 개발 방법을 다시 배울 수 있어 좋았습니다.
+                <br>
+                또한 AX과정을 진행 함으로서 개발 이외에 다른분야의 길이 트일 수 있게 되어 좋은 경험이 될것같습니다.
+              </div>
+            </div>
+
+          </article>
+
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- =========================
+         NOW
+    ========================== -->
+    <section tabindex="0">
+      <div class="container">
+
+        <div class="section-label">04 / NOW</div>
+
+        <h2>지금의 나</h2>
+
+        <div class="now-list">
+
+          <div class="now-item">
+            <div class="now-title">배우는 중</div>
+            <div class="now-content">
+              네트워크, 프로그래밍, 리눅스 서버 엔지니어링
+            </div>
+          </div>
+
+          <div class="now-item">
+            <div class="now-title">만드는 중</div>
+            <div class="now-content">
+              캠퍼스 네트워크 구조, GNS를 이용한 가상 네트워크, ALEPH 과제
+            </div>
+          </div>
+
+          <div class="now-item">
+            <div class="now-title">다음 목표</div>
+            <div class="now-content">
+              AX를 접목한 보안 프로그램
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- =========================
+         CONTACT
+    ========================== -->
+    <section class="contact" tabindex="0">
+      <div class="container">
+
+        <div class="section-label">05 / CONTACT</div>
+
+        <h2>
+          함께 이야기하고 싶다면
+          편하게 연락해주세요.
+        </h2>
+
+        <p class="contact-text">
+          공개해도 괜찮은 연락 수단만 남겨주세요.
+        </p>
+
+        <div class="contact-links">
+
+          <a
+            href="https://github.com/DEV-JayWhy/ALEPH_Subject_01.git"
+            target="_blank"
+            rel="noopener"
+          >
+            GitHub ↗
+          </a>
+
+          <a href="mailto:dev.jaywhy@gmail.com">
+            dev.jaywhy@gmail.com
+          </a>
+
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+
+  <!-- =========================
+       FOOTER
+  ========================== -->
+  <footer>
+    <div class="container">
+      <p>© 2026 박준영. Built with HTML & CSS.</p>
+    </div>
+  </footer>
+  <script>
+    function setupMoreButton(buttonId, contentId) {
+      const button = document.getElementById(buttonId);
+      const content = document.getElementById(contentId);
+
+      button.addEventListener("click", () => {
+        const isOpen = button.getAttribute("aria-expanded") === "true";
+        button.setAttribute("aria-expanded", String(!isOpen));
+        content.hidden = isOpen;
+        button.textContent = isOpen ? "더보기" : "접기";
+      });
+    }
+
+    setupMoreButton("keyword-toggle", "keyword-more");
+    setupMoreButton("tech-toggle-1", "tech-more-1");
+    setupMoreButton("tech-toggle-2", "tech-more-2");
+
+  </script>
+</body>
+</html>
