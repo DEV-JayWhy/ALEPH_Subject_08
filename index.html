@@ -791,7 +791,7 @@
         <div role="status" style="margin-top:24px;padding:24px;border:1px solid #ddd;background:white">
           <strong>🔒 잠긴 공간</strong>
           <p>현재는 비공개 자료에 접근할 수 없습니다. 패스키 등록과 로그인은 다음 카드에서 구현합니다.</p>
-          <button type="button" disabled style="margin-top:12px;padding:10px 18px;cursor:not-allowed">패스키로 열기 · 준비 중</button>
+          <label for="passkey-name">테스트 계정 이름</label> <input id="passkey-name" maxlength="50" placeholder="테스트 사용자 B" style="padding:10px"> <button id="passkey-register" type="button" style="padding:10px">새 패스키 등록</button><p id="passkey-status" role="status" aria-live="polite"></p>
         </div>
       </div>
     </section>
@@ -825,5 +825,24 @@
     setupMoreButton("tech-toggle-2", "tech-more-2");
 
   </script>
+
+<script type="module">
+const btn=document.getElementById('passkey-register');
+const status=document.getElementById('passkey-status');
+btn.addEventListener('click',async()=>{
+ const displayName=document.getElementById('passkey-name').value.trim();
+ if(displayName.length<2){status.textContent='이름을 2글자 이상 입력하세요.';return;}
+ btn.disabled=true;status.textContent='패스키 등록 요청 중...';
+ try {
+  const {startRegistration}=await import('https://esm.sh/@simplewebauthn/browser@13.2.2');
+  const a=await fetch('/api/register-options',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({displayName})});
+  const p=await a.json();if(!a.ok)throw Error(p.error||'옵션 요청 실패');
+  const credential=await startRegistration({optionsJSON:p.options});
+  const b=await fetch('/api/register-verify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({challengeId:p.challengeId,credential})});
+  const v=await b.json();if(!b.ok||!v.verified)throw Error(v.error||'검증 실패');
+  status.textContent='패스키 등록 완료. 로그인은 다음 카드에서 구현합니다.';
+ }catch(e){status.textContent='등록 실패 또는 취소: '+e.message;}finally{btn.disabled=false;}
+});
+</script>
 </body>
 </html>
