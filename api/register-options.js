@@ -5,10 +5,11 @@ import { getDb, RP_ID, noStore } from './_lib/server.js';
 export default async function handler(req,res) {
   noStore(res);
   if(req.method!=='POST') return res.status(405).json({error:'METHOD_NOT_ALLOWED'});
+  let stage='request_validation';
   try {
     const name = String(req.body?.displayName || '').trim();
     if(name.length < 2 || name.length > 50) return res.status(400).json({error:'INVALID_NAME'});
-    let stage='db_init';
+    stage='db_init';
     const db=getDb();
     // New registrations create fresh users; never let an anonymous caller claim an existing user.
     stage='user_insert';
