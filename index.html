@@ -782,17 +782,19 @@
     </section>
 
 
-    <!-- PRIVATE: contents are never embedded in this public document -->
+    <!-- PRIVATE: contents are fetched only after server-side passkey authentication -->
     <section id="private-space" class="private-space" tabindex="0">
       <div class="container">
         <div class="section-label">06 / PRIVATE · PASSKEY</div>
-        <h2>나만의 공간</h2>
-        <p class="about-text">공개 소개와 분리된 비공개 공간입니다. 프로젝트 내부 메모, 지원 예정 기업 목록, 개인 학습 회고를 패스키 인증 후 확인할 수 있습니다. 모든 항목은 과제용 가상 자료입니다.</p>
-        <div role="status" style="margin-top:24px;padding:24px;border:1px solid #ddd;background:white">
-          <strong id="private-lock-label">🔒 잠긴 공간</strong>
-          <p id="private-access-message">현재는 비공개 자료에 접근할 수 없습니다. 패스키로 로그인하면 내 비공개 자료를 확인할 수 있습니다.</p>
-          <label for="passkey-name">테스트 계정 이름</label> <input id="passkey-name" maxlength="50" placeholder="테스트 사용자 B" style="padding:10px"> <button id="passkey-register" type="button" style="padding:10px">새 패스키 등록</button><p id="passkey-status" role="status" aria-live="polite"></p><button id="passkey-login" type="button">패스키 로그인</button><button id="private-refresh" type="button" hidden>내 자료 확인</button><button id="passkey-add" type="button" hidden>이 계정에 두 번째 패스키 추가</button><button id="passkey-logout" type="button" hidden>로그아웃</button><div id="private-results" aria-live="polite"></div><div id="passkey-management" hidden><h3>등록된 패스키 관리</h3><p>마지막 패스키는 계정 복구를 위해 삭제할 수 없습니다.</p><button id="passkey-list-refresh" type="button">패스키 목록 새로고침</button><div id="passkey-list"></div></div>
+        <div class="private-heading"><div><div class="private-kicker">SECURE WORKSPACE <span>✦</span> PASSKEY PROTECTED</div><h2>나만의 공간<span class="private-heading-dot">.</span></h2><p class="private-description">공개 소개와 분리된 나만의 비공개 공간입니다. 패스키로 인증하고 메모와 학습 기록을 안전하게 확인하세요.<br><small>※ 모든 자료는 과제용 가상 데이터입니다.</small></p></div><div class="private-hero-icon" aria-hidden="true">🔐</div></div>
+        <div class="private-panel">
+          <div class="private-panel-heading"><div class="private-panel-icon" aria-hidden="true">🛡️</div><div><div class="private-title-row"><strong id="private-lock-label">🔒 잠긴 공간</strong><span class="private-security-tag">PASSKEY SECURITY</span></div><p id="private-access-message">현재는 비공개 자료에 접근할 수 없습니다. 패스키로 로그인하면 내 비공개 자료를 확인할 수 있습니다.</p></div></div>
+          <div class="private-form-row"><div class="private-input-group"><label for="passkey-name">테스트 계정 이름</label><input id="passkey-name" maxlength="50" placeholder="테스트 사용자 B" autocomplete="off"></div><button id="passkey-register" type="button" class="private-button primary">＋ 새 패스키 등록</button></div>
+          <p id="passkey-status" role="status" aria-live="polite"></p>
+          <div class="private-action-row"><button id="passkey-login" type="button" class="private-button outline">↗ 패스키 로그인</button><button id="private-refresh" type="button" class="private-button neutral" hidden>▤ 내 자료 확인</button><button id="passkey-add" type="button" class="private-button purple" hidden>＋ 이 계정에 두 번째 패스키 추가</button><button id="passkey-logout" type="button" class="private-button danger" hidden>↪ 로그아웃</button></div>
         </div>
+        <div id="private-results" class="private-results" aria-live="polite"></div>
+        <div id="passkey-management" class="private-management" hidden><div class="private-management-head"><div><div class="private-management-title"><span aria-hidden="true">🗝️</span><h3>등록된 패스키 관리</h3></div><p>현재 계정에 등록된 인증 수단입니다. 마지막 패스키는 계정 복구를 위해 삭제할 수 없습니다.</p></div><button id="passkey-list-refresh" type="button" class="private-button neutral">↻ 패스키 목록 새로고침</button></div><div id="passkey-list" class="private-key-list"></div></div>
       </div>
     </section>
 
@@ -808,12 +810,63 @@
     </div>
   </footer>
   <style>
-#private-space button{padding:9px 12px;margin:5px 6px 5px 0;border:1px solid #aaa;border-radius:5px;cursor:pointer}
-#private-space button:disabled{opacity:.42;cursor:not-allowed}
-#private-space input{max-width:100%;margin:5px 8px 5px 0}
-#private-space #private-results article{margin:18px 0}
-#private-space #passkey-management{margin-top:24px;padding-top:16px;border-top:1px solid #ddd}
-#private-space #passkey-list p{margin:10px 0;line-height:1.7}
+#private-space{background:linear-gradient(155deg,#f8faff 0%,#f4f7ff 52%,#f8f9fd 100%);color:#18243c;border-bottom:0}
+#private-space .section-label{color:#667eaa;font-weight:700}
+#private-space .private-heading{display:flex;justify-content:space-between;align-items:center;gap:24px;margin-bottom:30px}
+#private-space .private-heading h2{margin:8px 0 16px;font-size:clamp(36px,6vw,58px);letter-spacing:-.055em}
+#private-space .private-heading-dot{color:#3979ee}
+#private-space .private-kicker{font-size:11px;letter-spacing:.16em;color:#4974bd;font-weight:800}
+#private-space .private-kicker span{color:#9363e5;margin:0 5px}
+#private-space .private-description{max-width:720px;color:#52627d;font-size:16px;line-height:1.9}
+#private-space .private-description small{font-size:13px;color:#8290a6}
+#private-space .private-hero-icon{width:126px;height:126px;display:grid;place-items:center;flex-shrink:0;font-size:58px;background:linear-gradient(145deg,#e4edff,#f3eaff);border-radius:32px;box-shadow:0 18px 45px #4667ab20}
+#private-space .private-panel,#private-space .private-management{border:1px solid #dce6f8;background:#fff;border-radius:22px;box-shadow:0 14px 38px #38558a0b;padding:30px}
+#private-space .private-panel-heading{display:flex;gap:16px;align-items:center;margin-bottom:24px}
+#private-space .private-panel-icon{width:52px;height:52px;display:grid;place-items:center;font-size:25px;background:#eaf2ff;border-radius:15px;flex-shrink:0}
+#private-space .private-title-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+#private-space #private-lock-label{font-size:22px;letter-spacing:-.03em}
+#private-space .private-security-tag{font-size:10px;font-weight:800;letter-spacing:.07em;background:#e7f8ee;color:#17845b;border-radius:999px;padding:5px 10px}
+#private-space #private-access-message{font-size:14px;color:#63718b;margin-top:4px}
+#private-space .private-form-row{display:flex;align-items:end;gap:12px;flex-wrap:wrap}
+#private-space .private-input-group{display:flex;flex-direction:column;gap:7px;flex:1;min-width:220px;max-width:360px}
+#private-space label{font-size:13px;font-weight:700;color:#40526e}
+#private-space input{width:100%;padding:13px 15px;border:1px solid #d4deec;border-radius:11px;font:inherit;font-size:14px;color:#17243d;background:#fbfcff;outline-offset:2px}
+#private-space input:focus{border-color:#3979ee;outline:2px solid #d9e7ff}
+#private-space button.private-button{appearance:none;display:inline-flex;justify-content:center;align-items:center;padding:12px 17px;border-radius:11px;border:1px solid transparent;font:inherit;font-size:13px;font-weight:700;cursor:pointer;transition:transform .18s,box-shadow .18s,background .18s;min-height:45px}
+#private-space button.private-button:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 18px #283e6b1b}
+#private-space button.private-button:focus-visible{outline:3px solid #90b6ff;outline-offset:2px}
+#private-space button.private-button:disabled{opacity:.43;cursor:not-allowed;transform:none}
+#private-space .private-button.primary{background:#3076ee;color:white;box-shadow:0 5px 12px #3076ee27}
+#private-space .private-button.outline{background:#eff6ff;color:#1f60c3;border-color:#cfe1ff}
+#private-space .private-button.neutral{background:#f5f7fb;color:#33435e;border-color:#e0e5ee}
+#private-space .private-button.purple{background:#f5efff;color:#7342c7;border-color:#e6d9ff}
+#private-space .private-button.danger{background:#fff3f4;color:#c43b4a;border-color:#ffdce0}
+#private-space #passkey-status{min-height:25px;font-size:13px;color:#2766c3;margin:13px 0 4px}
+#private-space .private-action-row{display:flex;gap:9px;flex-wrap:wrap}
+#private-space .private-results{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px;margin-top:18px}
+#private-space .private-results:empty{display:none}
+#private-space .private-results article{background:#fff;border:1px solid #dfe9f7;border-radius:18px;padding:24px;min-width:0;box-shadow:0 10px 24px #38558a0a}
+#private-space .private-results article:nth-child(3n+1){background:linear-gradient(145deg,#f1fcf7,#fff);border-color:#d2f0e2}
+#private-space .private-results article:nth-child(3n+2){background:linear-gradient(145deg,#f0f7ff,#fff);border-color:#d7e8ff}
+#private-space .private-results article:nth-child(3n){background:linear-gradient(145deg,#f8f2ff,#fff);border-color:#e9dcff}
+#private-space .private-results article h3{font-size:19px;margin-bottom:12px;line-height:1.35}
+#private-space .private-results article p{font-size:14px;color:#5d6a80;overflow-wrap:anywhere}
+#private-space .private-management{margin-top:18px}
+#private-space .private-management-head{display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap;margin-bottom:22px}
+#private-space .private-management-title{display:flex;align-items:center;gap:10px}
+#private-space .private-management-title span{font-size:25px}
+#private-space .private-management-title h3{font-size:21px;margin:0}
+#private-space .private-management-head p{font-size:13px;color:#71809a;margin-top:5px}
+#private-space .private-key-list{display:grid;gap:10px}
+#private-space .private-key-row{display:flex;align-items:center;gap:14px;padding:17px 18px;border:1px solid #e2e8f3;border-radius:14px;background:#fbfcff}
+#private-space .private-key-symbol{display:grid;place-items:center;width:44px;height:44px;flex-shrink:0;background:#eaf2ff;border-radius:12px;font-size:22px}
+#private-space .private-key-row:nth-child(even) .private-key-symbol{background:#f1e9ff}
+#private-space .private-key-detail{flex:1;min-width:0}
+#private-space .private-key-name{display:block;font-size:15px;font-weight:800;color:#1f2d47}
+#private-space .private-key-date{display:block;font-size:12px;color:#75829b;margin-top:4px}
+#private-space .private-key-row button{padding:9px 14px;border-radius:9px;border:1px solid #ffd6dc;background:#fff2f3;color:#c92e47;cursor:pointer;font-weight:700}
+#private-space .private-key-row button:disabled{opacity:.45;cursor:not-allowed}
+@media(max-width:700px){#private-space .private-heading{align-items:start}#private-space .private-hero-icon{width:72px;height:72px;font-size:34px;border-radius:20px}#private-space .private-panel,#private-space .private-management{padding:20px}#private-space .private-results{grid-template-columns:1fr}#private-space .private-form-row .private-button{width:100%}#private-space .private-input-group{max-width:none}#private-space .private-action-row .private-button{flex:1 1 100%}#private-space .private-key-row{padding:13px;gap:10px}#private-space .private-key-row button{flex-shrink:0}}
   </style>
   <script>
     function setupMoreButton(buttonId, contentId) {
@@ -862,10 +915,13 @@ const keyList=document.getElementById('passkey-list');
 async function loadKeys(){
  const r=await fetch('/api/passkeys');const d=await r.json();if(!r.ok)throw Error(d.error||'패스키 조회 실패');
  keyList.replaceChildren();
- for(const key of d.passkeys){
-  const row=document.createElement('p');
-  const label=document.createElement('span');label.textContent=(key.name||'패스키')+' · 등록 '+new Date(key.created_at).toLocaleString('ko-KR')+' ';
-  row.append(label);
+ for(const [index,key] of d.passkeys.entries()){
+  const row=document.createElement('div');row.className='private-key-row';
+  const symbol=document.createElement('span');symbol.className='private-key-symbol';symbol.textContent='🔑';symbol.setAttribute('aria-hidden','true');
+  const detail=document.createElement('div');detail.className='private-key-detail';
+  const label=document.createElement('span');label.className='private-key-name';label.textContent=(index===0?'첫 번째':index===1?'두 번째':String(index+1)+'번째')+' 패스키';
+  const date=document.createElement('span');date.className='private-key-date';date.textContent='등록 '+new Date(key.created_at).toLocaleString('ko-KR');
+  detail.append(label,date);row.append(symbol,detail);
   const del=document.createElement('button');del.type='button';del.textContent='삭제';del.disabled=d.passkeys.length<=1;
   del.addEventListener('click',async()=>{
    if(!confirm('이 패스키를 삭제할까요? 삭제 후 이 인증기로 로그인할 수 없습니다.'))return;
