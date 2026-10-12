@@ -1,0 +1,32 @@
+name: Session expiry HTTP integration test
+on:
+  push:
+    paths:
+      - '.github/workflows/session-expiry-test.yml'
+  workflow_dispatch:
+
+jobs:
+  expired-session:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Verify expired session is rejected by production API
+        env:
+          TARGET_URL: https://aleph-subject-08.vercel.app/api/private-items
+          EXPIRED_TEST_TOKEN: a08-expired-integration-only-20261012-7f3b3d4eac914d31b39f91c65f0043b1
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          const url = process.env.TARGET_URL;
+          const test = async (label, headers, expectedError) => {
+            const res = await fetch(url, { method: 'GET', headers, redirect: 'manual' });
+            const body = await res.json();
+            console.log(label, 'HTTP', res.status, 'error', body.error);
+            assert.equal(res.status, 401, label + ' must return HTTP 401');
+            assert.equal(body.error, expectedError, label + ' error mismatch');
+            assert.ok(!('items' in body), label + ' must not expose private items');
+          };
+          await test('No cookie', {}, 'AUTH_REQUIRED');
+          await test('Expired cookie', { Cookie: 'a08_session=' + process.env.EXPIRED_TEST_TOKEN }, 'SESSION_INVALID');
+          console.log('PASS: production HTTP API rejects expired sessions and anonymous requests');
+          NODE
