@@ -1,0 +1,35 @@
+name: Registration challenge security test
+on:
+  push:
+    paths:
+      - '.github/workflows/registration-challenge-test.yml'
+  workflow_dispatch:
+jobs:
+  registration-challenge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Verify consumed and expired registration challenges are rejected
+        env:
+          API_URL: https://aleph-subject-08.vercel.app/api/register-verify
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          const cases = [
+            ['Consumed registration challenge', 'a08c0000-0000-4000-8000-000000000021'],
+            ['Expired registration challenge', 'a08c0000-0000-4000-8000-000000000022'],
+          ];
+          for (const [label, challengeId] of cases) {
+            const res = await fetch(process.env.API_URL, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ challengeId, credential: { response: { clientDataJSON: 'e30' } } }),
+            });
+            const body = await res.json();
+            console.log(label, 'HTTP', res.status, 'error', body.error);
+            assert.equal(res.status, 400, label + ': expected HTTP 400');
+            assert.equal(body.error, 'CHALLENGE_INVALID', label + ': expected CHALLENGE_INVALID');
+            assert.ok(!body.verified && !body.credentialId, label + ': no registration allowed');
+          }
+          console.log('PASS: production registration API rejects consumed and expired challenges');
+          NODE
