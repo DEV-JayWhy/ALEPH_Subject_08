@@ -14,7 +14,7 @@ export default async function handler(req,res) {
     // New registrations create fresh users; never let an anonymous caller claim an existing user.
     stage='user_insert';
     const {data:user,error:ue}=await db.from('a08_users').insert({display_name:name}).select('id').single();
-    if(ue) throw ue;
+    if(ue) { console.error('registration database insert failed', ue.code, ue.message); throw ue; }
     stage='generate_options';
     const options=await generateRegistrationOptions({
       rpName:'ALEPH Subject 08',rpID:RP_ID,
@@ -30,5 +30,5 @@ export default async function handler(req,res) {
     }).select('id').single();
     if(ce) throw ce;
     return res.status(200).json({options,challengeId:row.id});
-  } catch(e) { console.error('registration options failed',stage,e?.message);return res.status(500).json({error:'REGISTRATION_OPTIONS_FAILED',stage}); }
+  } catch(e) { console.error('registration options failed',stage,e?.message);return res.status(500).json({error:'REGISTRATION_OPTIONS_FAILED',stage,reason:e?.code==='42501'?'DB_PERMISSION':e?.code==='PGRST301'?'DB_AUTH':e?.code?.startsWith('PGRST')?'DB_API':'SERVER_ERROR'}); }
 }
