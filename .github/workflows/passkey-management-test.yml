@@ -1,0 +1,42 @@
+name: Passkey management HTTP test
+on:
+  workflow_dispatch:
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Verify passkey management with isolated test account
+        env:
+          TEST_SESSION_TOKEN: ${{ secrets.A08_TEST_SESSION_TOKEN }}
+          API_URL: https://aleph-subject-08.vercel.app/api/passkeys
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          assert.ok(process.env.TEST_SESSION_TOKEN, 'Missing A08_TEST_SESSION_TOKEN repository secret');
+          const headers = { 'Content-Type': 'application/json', Cookie: 'a08_session=' + process.env.TEST_SESSION_TOKEN };
+          const request = async (method, id) => {
+            const res = await fetch(process.env.API_URL, {
+              method, headers,
+              body: id ? JSON.stringify({ id }) : undefined,
+            });
+            const body = await res.json();
+            console.log(method, res.status, body.error || (body.deleted ? 'deleted' : 'listed'));
+            return { status: res.status, body };
+          };
+          const before = await request('GET');
+          assert.equal(before.status, 200);
+          const keys = before.body.passkeys;
+          assert.equal(keys.length, 2, 'Isolated fixture must have exactly two passkeys');
+          assert.ok(keys.every(k => k.id.startsWith('a08-fixture-')), 'Refusing to modify real passkeys');
+          const first = await request('DELETE', keys[0].id);
+          assert.equal(first.status, 200);
+          assert.equal(first.body.deleted, true);
+          const last = await request('DELETE', keys[1].id);
+          assert.equal(last.status, 409);
+          assert.equal(last.body.error, 'LAST_PASSKEY_PROTECTED');
+          const after = await request('GET');
+          assert.equal(after.status, 200);
+          assert.deepEqual(after.body.passkeys.map(k => k.id), [keys[1].id]);
+          console.log('PASS: one deletion allowed; last passkey protected');
+          NODE
