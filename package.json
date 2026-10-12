@@ -1,0 +1,12 @@
+{
+  "name": "aleph-subject-08",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@simplewebauthn/server": "^13.2.2",
+    "@supabase/supabase-js": "^2.57.0"
+  }
+}
