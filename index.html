@@ -791,7 +791,7 @@
         <div role="status" style="margin-top:24px;padding:24px;border:1px solid #ddd;background:white">
           <strong id="private-lock-label">🔒 잠긴 공간</strong>
           <p>현재는 비공개 자료에 접근할 수 없습니다. 패스키로 로그인하면 내 비공개 자료를 확인할 수 있습니다.</p>
-          <label for="passkey-name">테스트 계정 이름</label> <input id="passkey-name" maxlength="50" placeholder="테스트 사용자 B" style="padding:10px"> <button id="passkey-register" type="button" style="padding:10px">새 패스키 등록</button><p id="passkey-status" role="status" aria-live="polite"></p><button id="passkey-login" type="button">패스키 로그인</button><button id="private-refresh" type="button" hidden>내 자료 확인</button><button id="passkey-add" type="button" hidden>이 계정에 두 번째 패스키 추가</button><button id="passkey-logout" type="button" hidden>로그아웃</button><div id="private-results" aria-live="polite"></div>
+          <label for="passkey-name">테스트 계정 이름</label> <input id="passkey-name" maxlength="50" placeholder="테스트 사용자 B" style="padding:10px"> <button id="passkey-register" type="button" style="padding:10px">새 패스키 등록</button><p id="passkey-status" role="status" aria-live="polite"></p><button id="passkey-login" type="button">패스키 로그인</button><button id="private-refresh" type="button" hidden>내 자료 확인</button><button id="passkey-add" type="button" hidden>이 계정에 두 번째 패스키 추가</button><button id="passkey-logout" type="button" hidden>로그아웃</button><div id="private-results" aria-live="polite"></div><div id="passkey-management" hidden><h3>등록된 패스키 관리</h3><p>마지막 패스키는 계정 복구를 위해 삭제할 수 없습니다.</p><button id="passkey-list-refresh" type="button">패스키 목록 새로고침</button><div id="passkey-list"></div></div>
         </div>
       </div>
     </section>
@@ -848,6 +848,27 @@ const refresh=document.getElementById('private-refresh');
 const results=document.getElementById('private-results');
 const logout=document.getElementById('passkey-logout');
 const addKey=document.getElementById('passkey-add');
+const management=document.getElementById('passkey-management');
+const keyList=document.getElementById('passkey-list');
+async function loadKeys(){
+ const r=await fetch('/api/passkeys');const d=await r.json();if(!r.ok)throw Error(d.error||'패스키 조회 실패');
+ keyList.replaceChildren();
+ for(const key of d.passkeys){
+  const row=document.createElement('p');
+  const label=document.createElement('span');label.textContent=(key.name||'패스키')+' · 등록 '+new Date(key.created_at).toLocaleString('ko-KR')+' ';
+  row.append(label);
+  const del=document.createElement('button');del.type='button';del.textContent='삭제';del.disabled=d.passkeys.length<=1;
+  del.addEventListener('click',async()=>{
+   if(!confirm('이 패스키를 삭제할까요? 삭제 후 이 인증기로 로그인할 수 없습니다.'))return;
+   const x=await fetch('/api/passkeys',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:key.id})});
+   const b=await x.json();if(!x.ok){status.textContent='삭제 실패: '+(b.error||'알 수 없는 오류');return;}
+   status.textContent='패스키 삭제 완료';await loadKeys();
+  });row.append(del);keyList.append(row);
+ }
+}
+document.getElementById('passkey-list-refresh').addEventListener('click',()=>loadKeys().catch(e=>{status.textContent=e.message;}));
+function lockPrivate(){results.replaceChildren();refresh.hidden=true;logout.hidden=true;addKey.hidden=true;management.hidden=true;keyList.replaceChildren();document.getElementById('private-lock-label').textContent='🔒 잠긴 공간';}
+
 async function loadPrivate(){
  const response=await fetch('/api/private-items',{credentials:'same-origin'});
  const body=await response.json();
@@ -870,10 +891,10 @@ login.addEventListener('click',async()=>{
   const credential=await startAuthentication({optionsJSON:p.options});
   const b=await fetch('/api/login-verify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({challengeId:p.challengeId,credential})});
   const v=await b.json();if(!b.ok||!v.authenticated)throw Error(v.error||'로그인 검증 실패');
-  status.textContent='패스키 로그인 성공';document.getElementById('private-lock-label').textContent='🔓 인증된 공간';refresh.hidden=false;logout.hidden=false;addKey.hidden=false;await loadPrivate();
+  status.textContent='패스키 로그인 성공';document.getElementById('private-lock-label').textContent='🔓 인증된 공간';refresh.hidden=false;logout.hidden=false;addKey.hidden=false;management.hidden=false;await loadPrivate();await loadKeys();
  }catch(e){status.textContent='로그인 실패 또는 취소: '+e.message;}finally{login.disabled=false;}
 });
-refresh.addEventListener('click',async()=>{try{await loadPrivate();}catch(e){results.replaceChildren();refresh.hidden=true;logout.hidden=true;addKey.hidden=true;document.getElementById('private-lock-label').textContent='🔒 잠긴 공간';status.textContent=e.message;}});
+refresh.addEventListener('click',async()=>{try{await loadPrivate();}catch(e){lockPrivate();status.textContent=e.message;}});
 addKey.addEventListener('click',async()=>{
  addKey.disabled=true;status.textContent='두 번째 패스키 등록 준비 중...';
  try{
@@ -883,10 +904,10 @@ addKey.addEventListener('click',async()=>{
   const credential=await startRegistration({optionsJSON:p.options});
   const b=await fetch('/api/register-verify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({challengeId:p.challengeId,credential})});
   const v=await b.json();if(!b.ok||!v.verified)throw Error(v.error||'추가 등록 검증 실패');
-  status.textContent='현재 계정에 두 번째 패스키 등록 완료';
+  status.textContent='현재 계정에 두 번째 패스키 등록 완료';await loadKeys();
  }catch(e){status.textContent='패스키 추가 실패 또는 취소: '+e.message;}finally{addKey.disabled=false;}
 });
-logout.addEventListener('click',async()=>{try{const r=await fetch('/api/logout',{method:'POST'});if(!r.ok)throw Error('로그아웃 요청 실패');results.replaceChildren();refresh.hidden=true;logout.hidden=true;document.getElementById('private-lock-label').textContent='🔒 잠긴 공간';status.textContent='로그아웃 완료';}catch(e){status.textContent=e.message;}});
+logout.addEventListener('click',async()=>{try{const r=await fetch('/api/logout',{method:'POST'});if(!r.ok)throw Error('로그아웃 요청 실패');lockPrivate();status.textContent='로그아웃 완료';}catch(e){status.textContent=e.message;}});
 </script>
 </body>
 </html>
