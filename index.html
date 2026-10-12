@@ -790,7 +790,7 @@
         <p class="about-text">공개 소개와 분리된 비공개 공간입니다. 프로젝트 내부 메모, 지원 예정 기업 목록, 개인 학습 회고를 패스키 인증 후 확인할 수 있습니다. 모든 항목은 과제용 가상 자료입니다.</p>
         <div role="status" style="margin-top:24px;padding:24px;border:1px solid #ddd;background:white">
           <strong id="private-lock-label">🔒 잠긴 공간</strong>
-          <p>현재는 비공개 자료에 접근할 수 없습니다. 패스키로 로그인하면 내 비공개 자료를 확인할 수 있습니다.</p>
+          <p id="private-access-message">현재는 비공개 자료에 접근할 수 없습니다. 패스키로 로그인하면 내 비공개 자료를 확인할 수 있습니다.</p>
           <label for="passkey-name">테스트 계정 이름</label> <input id="passkey-name" maxlength="50" placeholder="테스트 사용자 B" style="padding:10px"> <button id="passkey-register" type="button" style="padding:10px">새 패스키 등록</button><p id="passkey-status" role="status" aria-live="polite"></p><button id="passkey-login" type="button">패스키 로그인</button><button id="private-refresh" type="button" hidden>내 자료 확인</button><button id="passkey-add" type="button" hidden>이 계정에 두 번째 패스키 추가</button><button id="passkey-logout" type="button" hidden>로그아웃</button><div id="private-results" aria-live="polite"></div><div id="passkey-management" hidden><h3>등록된 패스키 관리</h3><p>마지막 패스키는 계정 복구를 위해 삭제할 수 없습니다.</p><button id="passkey-list-refresh" type="button">패스키 목록 새로고침</button><div id="passkey-list"></div></div>
         </div>
       </div>
@@ -807,6 +807,14 @@
       <p>© 2026 박준영. Built with HTML & CSS.</p>
     </div>
   </footer>
+  <style>
+#private-space button{padding:9px 12px;margin:5px 6px 5px 0;border:1px solid #aaa;border-radius:5px;cursor:pointer}
+#private-space button:disabled{opacity:.42;cursor:not-allowed}
+#private-space input{max-width:100%;margin:5px 8px 5px 0}
+#private-space #private-results article{margin:18px 0}
+#private-space #passkey-management{margin-top:24px;padding-top:16px;border-top:1px solid #ddd}
+#private-space #passkey-list p{margin:10px 0;line-height:1.7}
+  </style>
   <script>
     function setupMoreButton(buttonId, contentId) {
       const button = document.getElementById(buttonId);
@@ -840,7 +848,7 @@ btn.addEventListener('click',async()=>{
   const credential=await startRegistration({optionsJSON:p.options});
   const b=await fetch('/api/register-verify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({challengeId:p.challengeId,credential})});
   const v=await b.json();if(!b.ok||!v.verified)throw Error(v.error||'검증 실패');
-  status.textContent='패스키 등록 완료. 로그인은 다음 카드에서 구현합니다.';
+  status.textContent='패스키 등록 완료. 이제 패스키 로그인 버튼으로 로그인하세요.';
  }catch(e){status.textContent='등록 실패 또는 취소: '+e.message;}finally{btn.disabled=false;}
 });
 const login=document.getElementById('passkey-login');
@@ -848,6 +856,7 @@ const refresh=document.getElementById('private-refresh');
 const results=document.getElementById('private-results');
 const logout=document.getElementById('passkey-logout');
 const addKey=document.getElementById('passkey-add');
+const accessMessage=document.getElementById('private-access-message');
 const management=document.getElementById('passkey-management');
 const keyList=document.getElementById('passkey-list');
 async function loadKeys(){
@@ -867,7 +876,7 @@ async function loadKeys(){
  }
 }
 document.getElementById('passkey-list-refresh').addEventListener('click',()=>loadKeys().catch(e=>{status.textContent=e.message;}));
-function lockPrivate(){results.replaceChildren();refresh.hidden=true;logout.hidden=true;addKey.hidden=true;management.hidden=true;keyList.replaceChildren();document.getElementById('private-lock-label').textContent='🔒 잠긴 공간';}
+function lockPrivate(){results.replaceChildren();refresh.hidden=true;logout.hidden=true;addKey.hidden=true;management.hidden=true;keyList.replaceChildren();document.getElementById('private-lock-label').textContent='🔒 잠긴 공간';accessMessage.textContent='현재는 비공개 자료에 접근할 수 없습니다. 패스키로 로그인하면 내 비공개 자료를 확인할 수 있습니다.';}
 
 async function loadPrivate(){
  const response=await fetch('/api/private-items',{credentials:'same-origin'});
@@ -891,7 +900,7 @@ login.addEventListener('click',async()=>{
   const credential=await startAuthentication({optionsJSON:p.options});
   const b=await fetch('/api/login-verify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({challengeId:p.challengeId,credential})});
   const v=await b.json();if(!b.ok||!v.authenticated)throw Error(v.error||'로그인 검증 실패');
-  status.textContent='패스키 로그인 성공';document.getElementById('private-lock-label').textContent='🔓 인증된 공간';refresh.hidden=false;logout.hidden=false;addKey.hidden=false;management.hidden=false;await loadPrivate();await loadKeys();
+  status.textContent='패스키 로그인 성공';document.getElementById('private-lock-label').textContent='🔓 인증된 공간';accessMessage.textContent='패스키 인증 완료. 현재 계정에 연결된 비공개 자료와 패스키를 관리할 수 있습니다.';refresh.hidden=false;logout.hidden=false;addKey.hidden=false;management.hidden=false;await loadPrivate();await loadKeys();
  }catch(e){status.textContent='로그인 실패 또는 취소: '+e.message;}finally{login.disabled=false;}
 });
 refresh.addEventListener('click',async()=>{try{await loadPrivate();}catch(e){lockPrivate();status.textContent=e.message;}});
